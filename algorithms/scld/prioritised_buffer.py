@@ -102,7 +102,7 @@ def build_prioritised_subtraj_buffer(
         valid_samples = jnp.isfinite(log_w) & jnp.all(jnp.isfinite(x), axis=(2, 3))
         indices = (jnp.arange(batch_size) + buffer_state.current_index) % max_length
 
-        x, log_w = jax.tree_map(
+        x, log_w = jax.tree_util.tree_map(
             lambda a, b: broadcasted_where(valid_samples, a, b),
             (x, log_w),
             (buffer_state.data.x[:, indices], buffer_state.data.log_w[:, indices]),
@@ -228,7 +228,7 @@ def build_prioritised_subtraj_buffer(
     ) -> Iterable[Tuple[chex.Array, chex.Array, chex.Array]]:
         """Returns dataset with n-batches on the leading axis."""
         x, indices = sample(key, buffer_state, batch_size * n_batches)
-        dataset = jax.tree_map(
+        dataset = jax.tree_util.tree_map(
             lambda x: x.reshape((n_batches, batch_size, *x.shape[1:])), (x, indices)
         )
         return dataset

@@ -52,7 +52,7 @@ def reshape_to_match_num_dims(Y, X):
 
 def gradient_step(model_state, grads):
     grads_flat = flatten_dict(grads)
-    grads_avg = unflatten_dict(jax.tree_map(lambda g: g.mean(0), grads_flat))
+    grads_avg = unflatten_dict(jax.tree_util.tree_map(lambda g: g.mean(0), grads_flat))
     return model_state.apply_gradients(grads=grads_avg)
 
 
