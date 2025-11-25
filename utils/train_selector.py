@@ -89,7 +89,7 @@ def get_train_fn(alg_name):
 
         return gbs_trainer
 
-    elif alg_name == "scld":
+    elif alg_name in ["scld", "scld_womcmc", "scld_cmcd_kl", "scld_cmcd_lv"]:
         from algorithms.scld.scld import scld_trainer
 
         return scld_trainer

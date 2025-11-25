@@ -1,3 +1,5 @@
+name: PISGRADNet
+
 dim: ${target.dim}
 
 num_layers: 2

@@ -55,14 +55,7 @@ cmcd:  # Controlled Monte Carlo Diffusions
   initial_scale: 1.
   step_size: 5e-4
 
-scld:
-  max_diffusion: 1. 
-  initial_scale: 1.
-  step_size: 1e-3
-  annealing_step_size: 1e-2
-  n_sub_traj: 128
-
-gsb:  # General Schroedinger Bridge
+gbs:  # General Schroedinger Bridge
   max_diffusion: 1.
   initial_scale: 1.
   step_size: 5e-4
@@ -77,5 +70,36 @@ od_langevin:  # Overdamped Langevin Methods (ULA/MCD/CMCD)
   initial_scale: 1.
   step_size: 5e-4
 
+############# HYPERPARAMETERS USED IN OUR PAPER #############
+# We strictly follow the settings of the SCLD paper, except that
+# we report which yields better results between using or not using
+# the multistep learning rate scheduling.
+
+scld_cmcd_kl:
+  initial_scale: 1.
+  max_diffusion: 10. 
+  model_type: StateTimeNetwork
+  step_size: 1e-3
+  annealing_step_size: 1e-2
+  milestones: [20000, 30000]
+
+scld_cmcd_lv:
+  initial_scale: 1.
+  max_diffusion: 1. 
+  model_type: StateTimeNetwork
+  step_size: 1e-3
+  annealing_step_size: 1e-2
+  milestones: [20000, 30000]
+
+scld:
+  initial_scale: 1.
+  max_diffusion: 1. 
+  step_size: 1e-3
+  annealing_step_size: 1e-2
+  n_sub_traj: 128
+  n_sim: 3000
+  milestones: [1500, 2250]
+
 all: # Parameters that are shared between all algorithms
   batch_size: 2000
+  num_hid: 64

@@ -807,15 +807,20 @@ def scld_trainer(cfg, target):
 
                 model_state = gradient_step(model_state, grads_all)
 
-                if cfg.use_wandb:
-                    wandb.log(
-                        {
-                            "loss_hist": per_sample_loss,
-                            "stats/n_inner_its": alg_cfg.n_updates_per_sim * i + j,
-                            "stats/n_sims": i,
-                            "loss": jnp.mean(per_sample_loss),
-                        }
-                    )
+                try:
+                    if cfg.use_wandb:
+                        wandb.log(
+                            {
+                                "loss_hist": per_sample_loss,
+                                "stats/n_inner_its": alg_cfg.n_updates_per_sim * i + j,
+                                "stats/n_sims": i,
+                                "loss": jnp.mean(per_sample_loss),
+                            }
+                        )
+                except Exception as e:
+                    jax.debug.print("loss_hist: {per_sample_loss}", per_sample_loss=per_sample_loss)
+                    jax.debug.print("loss: {mean}", mean=jnp.mean(per_sample_loss))
+                    print(e)
 
             if i % eval_freq == 0 or i + 1 == alg_cfg.n_sim:
                 key, key_gen = jax.random.split(key_gen)

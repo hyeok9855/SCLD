@@ -1,5 +1,5 @@
-# Sequential Controlled Langevin Diffusions (SCLD)
-name: scld
+# Sequential Controlled Langevin Diffusions (scld_womcmc)
+name: scld_womcmc
 num_steps: 128  # Total number of steps / bridges. Defines the number of steps per sub-trajectory as n_steps / n_steps_per_traj
 n_sub_traj: ${target.scld.n_sub_traj} # 1 means no subtrajectories
 batch_size: ${target.all.batch_size}
@@ -24,7 +24,7 @@ step_size: ${target.scld.step_size}   # Learning rate or peak_lr if scheduling
 # For fair comparison with our methods; run with or without this and select the better results
 lr_schedule:
   type: constant
-  milestones: ${target.scld.milestones}
+  milestones: [20000, 30000]
   gamma: 0.3
 
 use_warmup: False
@@ -44,7 +44,7 @@ logZ_step_size: 0.05 # Learning rate for updating log Z for second-moment loss
 init_logZ: 0. # Initial value for learnable log Z for second-moment loss
 
 # number iterations settings
-n_sim: ${target.scld.n_sim}  # Outer loop iterations: Simulates the SDE + MCMC and puts samples in the buffer
+n_sim: 40000  # Outer loop iterations: Simulates the SDE + MCMC and puts samples in the buffer
 n_updates_per_sim: 1  # Inner loop iterations: Uses samples from the buffer to optimze the model on sub-trajectories
 
 # SMC settings
@@ -56,11 +56,11 @@ resampler: # Type of resampling scheme. Choose between [multinomial, systematic]
   identifier: multinomial #partial_sample
   resampler_args: [False, 1.]
 
-use_markov: True # Flag whether to use MCMC or not at train
-use_markov_inference: True # Flag whether to use MCMC at Inference time
+use_markov: False # Flag whether to use MCMC or not at train
+use_markov_inference: False # Flag whether to use MCMC at Inference time
 
 buffer:
-  use_buffer: True # if no, then use simplified SCLD training
+  use_buffer: True # if no, then use simplified scld_womcmc training
   prioritized: True # if False, then equivalent to temperature = infinity (i.e no prioritization)
   max_length_in_batches: 20. # Maximum length of buffer in batches. Setting this to 1 corresponds to not using a buffer
   min_length_in_batches: 1. # Can be ignored

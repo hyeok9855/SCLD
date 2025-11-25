@@ -1,97 +1,105 @@
-name: planar_robot_4goal
+name: many_well
+dim: 64
+a: -0.5
+b: -6.
+c: 1.
 has_entropy: False
-dim: 10
-num_goals: 4
+
+
 fn:
-  _target_: targets.planar_robot.PlanarRobot
+  _target_: targets.many_well.ManyWellEnergy
   dim: ${target.dim}
-  num_goals: ${target.num_goals}
-  log_Z:
-  can_sample: False
+  a: ${target.a}
+  b: ${target.b}
+  c: ${target.c}
+  can_sample: True
   sample_bounds: None
 
 # Experiment-specific algorithm parameters
 # ----------------------------------------
 
 mfvi: # Gaussian Mean Field Variational Inference
-  initial_scale:
-  step_size:
+  initial_scale: 0.1
+  step_size: 1e-3
 
 gmmvi: # Gaussian Mixture Model Variational Inference
-  initial_scale:
+  initial_scale: 10.
 
 hmc:  # Hamilton Monte Carlo
-  hmc_step_size: [0.01,0.001] #[0.01,0.1] 
+  hmc_step_size: [0.01,0.001]
 
 smc: # Sequential Monte Carlo Sampler
-  initial_scale: 2
+  initial_scale: 1.
 
 smc_rebuttal:
-  initial_scale: 0.1
-  target_ess: 0.50
-  hmc_step_size: [0.01, 0.05]
+  initial_scale: 10.0
+  target_ess: 0.99
+  hmc_step_size: [0.2, 0.1]
 
 flow_transport: # Flow Transport Methods (AFT/CRAFT)
-  initial_scale: 0.1
-  step_size:
+  initial_scale: 1.
+  step_size: 1e-5
 
 fab: # Flow Annealed Importance Sampling Bootstrap
-  initial_scale: 2
-  step_size: 0.001
-
-cmcd: # CMCD
-  initial_scale: 2 #0.1
-  max_diffusion: 0.03
+  initial_scale: 1
   step_size: 1e-4
 
 dds: # Denoising Diffusion Sampler
-  initial_scale: 2
-  step_size: 0.001
-  max_diffusion: 0.3
+  initial_scale: 0.1
+  step_size: 0.00001
+  max_diffusion: 10.
 
 dis: # DIS
-  initial_scale: 2
-  step_size: 0.001
-  max_diffusion: 0.3
+  initial_scale: 0.1
+  step_size: 0.00001
+  max_diffusion: 10.
 
 pis: # Path Integral Sampler
-  step_size: 0.00001
-  max_diffusion: 0.3
+  step_size: 1e-5
+  max_diffusion: 10.
 
 ud_langevin:  # Underdamped Langevin Methods (UHA/LDVI)
-  initial_scale:
-  step_size:
+  initial_scale: 0.1
+  step_size: 1e-3
 
 od_langevin:  # Overdamped Langevin Methods (ULA/MCD/CMCD)
-  initial_scale:
-  step_size:
+  initial_scale: 1.
+  step_size: 1e-3
+
+cmcd:  # Controlled Monte Carlo Diffusions
+  max_diffusion: 1. # sqrt(0.01 / (1 / 16))
+  initial_scale: 1.
+  step_size: 5e-4
 
 ############# HYPERPARAMETERS USED IN OUR PAPER #############
 # We strictly follow the settings of the SCLD paper, except that
 # we report which yields better results between using or not using
 # the multistep learning rate scheduling.
 
+# Note that many_well_64 (ManyWell) is different from many_well_554 (ManyWell2)
+# We used MW54 params in the SCLD paper
+
 scld_cmcd_kl:
-  initial_scale: 2. #0.1
-  max_diffusion: 0.03
+  initial_scale: 1.
+  max_diffusion: 1.
   model_type: PISGRADNet
-  step_size: 1e-3
+  step_size: 1e-4
   annealing_step_size: 1e-3
   milestones: [20000, 30000]
 
 scld_cmcd_lv:
-  initial_scale: 2. #0.1
-  max_diffusion: 0.03
-  model_type: PISGRADNet
-  step_size: 1e-3
+  initial_scale: 1.
+  max_diffusion: 10.
+  model_type: StateTimeNetwork
+  step_size: 1e-4
   annealing_step_size: 1e-2
   milestones: [20000, 30000]
 
 scld:
-  initial_scale: 2 #0.1
-  max_diffusion: 0.03
-  step_size: 1e-3
-  annealing_step_size: 1e-3
+  max_diffusion: 1. # sqrt(0.01 / (1 / 16))
+  initial_scale: 10.
+  step_size: 1e-4
+  annealing_step_size: 1e-2
   n_sub_traj: 4
   n_sim: 25000
   milestones: [12500, 18750]
